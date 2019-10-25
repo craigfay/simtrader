@@ -1,5 +1,7 @@
 extern crate reqwest;
 
+mod actors;
+
 use serde_json::{Value};
 use std::fs::read_to_string;
 use std::io::Read;
@@ -19,6 +21,14 @@ fn main() -> std::result::Result<(), Box<dyn Error>> {
 
     let v: Value = serde_json::from_str(&body)?;
     println!("{}", v);
+
+    let a = actors::Actor {
+        name: "angela",
+        cash: 5.00,
+        positions: vec!["MSFT"]
+    };
+
+    println!("{:?}", a);
 
     Ok(())
 }
