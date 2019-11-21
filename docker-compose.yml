@@ -1,0 +1,38 @@
+version: '3'
+services:
+    database:
+        container_name: database
+        image: postgres:11.5
+        restart: always
+        environment:
+            POSTGRES_USER: user
+            POSTGRES_PASSWORD: pass
+            POSTGRES_DB: db
+        networks:
+            - app-network
+        volumes:
+            - ./volumes/data:/data/
+
+    graphql:
+        container_name: graphql
+        image: node:12
+        environment:
+            DB_HOST: postgres://user:pass@database:5432/db
+        restart: unless-stopped
+        links:
+            - database
+        volumes:
+            - ./src:/src
+        working_dir: /src/
+        networks:
+            - app-network
+        depends_on:
+            - database
+        command: "npx postgraphile -c postgres://user:pass@database:5432/db --watch --host \"0.0.0.0\""
+        ports:
+            - 5000:5000
+
+
+networks:
+  app-network:
+    driver: bridge 
