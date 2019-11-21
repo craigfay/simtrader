@@ -22,8 +22,8 @@ services:
         links:
             - database
         volumes:
-            - ./src:/src
-        working_dir: /src/
+            - ./volumes/graphql:/graphql
+        working_dir: /graphql/
         networks:
             - app-network
         depends_on:
