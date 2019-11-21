@@ -10,7 +10,7 @@ services:
         networks:
             - app-network
         volumes:
-            - ./volumes/data:/data/
+            - ./services/database/data:/data/
 
     graphql:
         image: node:12
@@ -20,7 +20,7 @@ services:
         links:
             - database
         volumes:
-            - ./volumes/graphql:/graphql
+            - ./services/graphql:/graphql
         working_dir: /graphql/
         networks:
             - app-network
