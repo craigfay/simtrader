@@ -11,6 +11,9 @@ services:
             - app-network
         volumes:
             - ./services/database/data:/data/
+            # All SQL files in /docker-entrypoint-initdb.d will be automatically
+            # executed in alphabetical order by Postgres upon initialization.
+            - ./services/database/migrations:/docker-entrypoint-initdb.d/
 
     graphql:
         image: node:12

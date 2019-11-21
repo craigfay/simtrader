@@ -1,46 +1,44 @@
-CREATE DATABASE tradesim;
+-- database "db" and schema "public" will exist by default
 
-\connect tradesim;
+\connect db;
 
-CREATE SCHEMA tradesim_schema;
-
-CREATE TABLE tradesim_schema.actors (
+CREATE TABLE public.actors (
     id SERIAL PRIMARY KEY,
-    cash FLOAT(2) NOT NULL DEFAULT 0.00
+    cash FLOAT(2) NOT NULL DEFAULT 0.00,
     created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-COMMENT ON TABLE tradesim_schema.actors IS
+COMMENT ON TABLE public.actors IS
 'Actors represent people/programs that interact with the simulator';
 
-CREATE TABLE tradesim_schema.actions (
-    id SERIAL PRIMARY KEY
-    name TEXT
-)
-
-INSERT INTO tradesim_schema.actions VALUES ('BUY'), ('SELL')
-
-COMMENT ON TABLE tradesim_schema.actions IS
-'Actions is a reference table that defines the available types of transactions'
-
-CREATE TABLE tradesim_schema.transactions (
+CREATE TABLE public.actions (
     id SERIAL PRIMARY KEY,
-    action ENUM('BUY', 'SELL') NOT NULL,
+    name TEXT
+);
+
+INSERT INTO public.actions(name) VALUES ('BUY'), ('SELL');
+
+COMMENT ON TABLE public.actions IS
+'Actions is a reference table that defines the available types of transactions';
+
+CREATE TABLE public.transactions (
+    id SERIAL PRIMARY KEY,
     symbol TEXT NOT NULL,
     quantity INTEGER NOT NULL,
     price FLOAT(2) NOT NULL,
     created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    actor_id INTEGER NOT NULL REFERENCES tradesim_schema.actors(id)
+    action INTEGER NOT NULL REFERENCES public.actions(id),
+    actor_id INTEGER NOT NULL REFERENCES public.actors(id)
 );
 
-CREATE TABLE tradesim_schema.positions (
+CREATE TABLE public.positions (
     id SERIAL PRIMARY KEY,
     symbol TEXT NOT NULL,
     quantity INTEGER NOT NULL,
-    actor_id INTEGER NOT NULL REFERENCES tradesim_schema.actors(id)
+    actor_id INTEGER NOT NULL REFERENCES public.actors(id)
 );
 
-COMMENT ON TABLE tradesim_schema.transactions IS
+COMMENT ON TABLE public.transactions IS
 'Transactions represent asset trades by a particular actor';
