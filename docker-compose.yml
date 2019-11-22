@@ -16,12 +16,11 @@ services:
             - ./services/database/migrations:/docker-entrypoint-initdb.d/
 
     graphql:
-        image: node:12
-        environment:
-            DB_HOST: postgres://user:pass@database:5432/db
+        build:
+            # This container is built from a local Dockerfile, as opposed to
+            # pulling a more generic image from Docker Hub
+            context: "./services/graphql"
         restart: unless-stopped
-        links:
-            - database
         volumes:
             - ./services/graphql:/graphql
         working_dir: /graphql/
@@ -29,10 +28,30 @@ services:
             - app-network
         depends_on:
             - database
-        command: "npx postgraphile -c postgres://user:pass@database:5432/db --watch --host \"0.0.0.0\""
         ports:
             - 5000:5000
+        command: " \
+            npx postgraphile \
+            -c postgres://postgraphile:change_me@database:5432/db \
+            --host \"0.0.0.0\" \
+            --default-role anonymous \
+            --token public.jwt_token \
+            --secret change_me_too
+            "
 
+    admin:
+        image: adminer
+        restart: always
+        depends_on: 
+            - database
+        ports:
+            - 8080:8080
+        networks:
+            - app-network
+        volumes:
+            - ./services/admin/adminer.css:/var/www/html/adminer.css
+
+# Docker networks allow containers to communicate with one another
 networks:
   app-network:
     driver: bridge 
