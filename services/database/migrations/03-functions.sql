@@ -19,5 +19,5 @@ create function public.register_actor (password text)
     $$
 language plpgsql strict security definer;
 
-comment on function public.register_actor(text, text, text) is
+comment on function public.register_actor(text) is
 'Registers a single actor';

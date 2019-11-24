@@ -31,7 +31,7 @@ create function public.authenticate(actor_id integer , password text)
     declare
         actor private.actor;
     begin
-        -- Get an actor record matching the email argument
+        -- Get an actor record matching the actor_id argument
         select a.* into actor
         from private.actor as a
         where a.actor_id = $1;
@@ -52,7 +52,7 @@ language plpgsql strict security definer;
 
 -- PostGraphile will serialize each JWT to the database in the form of 
 -- local settings that exist on a per-transaction basis
-comment on function public.authenticate(text, text) is
+comment on function public.authenticate(integer, text) is
 'Creates a JWT token that will securely identify a client with an actor '
 'and give them certain permissions. This token expires in 2 days.';
 

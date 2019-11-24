@@ -8,5 +8,5 @@ create table private.actor (
     password_hash text not null
 );
 
-comment on column private.actor.email is
+comment on column private.actor.password_hash is
 'A hashed representation of an actor''s secret password';
