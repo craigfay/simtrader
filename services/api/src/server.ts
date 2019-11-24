@@ -29,5 +29,25 @@ async function buyHandler(req, meta) {
   if (!symbol) return http.response({ status: 400, body: 'Missing symbol' });
   if (!quantity) return http.response({ status: 400, body: 'Missing quantity' });
 
-  const actorLookupResponse = await fetch('graphql:5000/graphql')
+  const quote = await quoteDelegator.getQuote(symbol);
+  if (!quote) return http.response({ status: 400, body: 'Invalid Symbol' });
+
+  const actorLookupResponse = await fetch('graphql:5000/graphql', {
+    headers: { 'content/type': 'application/json' },
+    body: JSON.stringify({
+      query: `
+        query {
+          actorById(id: ${actor_id}) {
+            cash
+          }
+        }
+      `
+    })
+  })
+
+  const { data } = await actorLookupResponse.json();
+  if (!data) return 500;
+  if (!data.actorById) return http.response({ status: 400, body: 'Invalid actor_id' });
+
+  const cash = data.actorById.cash;
 }
