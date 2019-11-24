@@ -2,52 +2,43 @@
 
 \connect db;
 
-create table public.account (
+create table public.actors (
     id serial primary key,
-    name text unique not null,
-    created_date timestamp default current_timestamp
+    cash float(2) not null default 0.00,
+    created_date timestamp default current_timestamp,
+    updated_date timestamp default current_timestamp
 );
 
-comment on table public.account is
-'Individual people/programs that want to interact with the data';
+comment on table public.actors IS
+'Actors represent people/programs that interact with the simulator';
 
-
-create table public.product_review (
+create table public.actions (
     id serial primary key,
-    product_handle text not null,
-    stars integer not null,
-    author text not null,
-    title text not null,
-    message text not null,
-    reply text,
-    published boolean not null default false,
-    created_date timestamp default current_timestamp
+    name text
 );
 
-comment on table public.product_review is
-'product_reviews are created by customers in response to a purchase';
+INSERT INTO public.actions(name) VALUES ('BUY'), ('SELL');
 
-comment on column public.product_review.product_handle is
-'A unique slug that refers to the product that the customer is reviewing';
+comment on table public.actions IS
+'Actions is a reference table that defines the available types of transactions';
 
-comment on column public.product_review.stars is
-'Value from 1 to 5 that indicates how much the customer liked the product';
+create table public.transactions (
+    id serial primary key,
+    symbol text not null,
+    quantity integer not null,
+    price float(2) not null,
+    created_date timestamp default current_timestamp,
+    updated_date timestamp default current_timestamp,
+    action integer not null references public.actions(id),
+    actor_id integer not null references public.actors(id)
+);
 
-comment on column public.product_review.author is
-'The name that the customer chooses to publicly identify themselves';
+create table public.positions (
+    id serial primary key,
+    symbol text not null,
+    quantity integer not null,
+    actor_id integer not null references public.actors(id)
+);
 
-comment on column public.product_review.title is
-'A brief summary to understand the review at a glance';
-
-comment on column public.product_review.message is
-'The customer''s full description of their experience';
-
-comment on column public.product_review.reply is
-'A response to the review by the guest services team';
-
-comment on column public.product_review.published is
-'Whether or not the review has been approved for public display';
-
-
-
-
+comment on table public.transactions is
+'Transactions represent asset trades by a particular actor';
