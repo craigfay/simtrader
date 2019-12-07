@@ -29,7 +29,7 @@ create table public.transaction (
     price float(2) not null,
     created_date timestamp default current_timestamp,
     updated_date timestamp default current_timestamp,
-    action integer not null references public.action(id),
+    action_id integer not null references public.action(id),
     actor_id integer not null references public.actor(id)
 );
 
