@@ -50,5 +50,9 @@ async function buyHandler(req, meta) {
   if (!data) return 500;
   if (!data.actorById) return http.response({ status: 400, body: 'Invalid actor_id' });
 
-  const cash = data.actorById.cash;
+  console.log({quote})
+  if (data.actorId.cash < quote) {
+    return http.response({ status: 400, body: 'Insufficient funds '});
+  }
+
 }

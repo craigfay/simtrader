@@ -2,11 +2,13 @@
 FROM node:12
 
 RUN mkdir /api
+WORKDIR /api
 COPY package.json /api
 COPY package-lock.json /api
-COPY build-deps.sh /api
-RUN npm --prefix /api install
-RUN npm --prefix /api install -g typescript
-RUN npm --prefix /api run buildDeps
+RUN npm install -g typescript
+RUN npm install -g ts-node
+RUN npm install
 
 COPY src /api/src
+
+CMD npx ts-node /api/src/main.js

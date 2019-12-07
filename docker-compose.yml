@@ -41,16 +41,16 @@ services:
 
     api:
         build:
-            context: "./services/api"
+            context: ./services/api
         depends_on:
             - graphql
         ports:
             - 80:80
         networks:
             - app-network
-        volumes:
-            - ./services/api:/api
-        command: 'npx ts-node /api/src/main'
+        working_dir: /api
+        # command: ls
+        command: 'npx ts-node src/main.js'
         
 # Docker networks allow containers to communicate with one another
 networks:
