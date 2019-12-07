@@ -5,6 +5,7 @@ import fetch from 'node-fetch';
 
 export function makeHttpServer(data) {
   const requests = http.server();
+  requests.route('GET', '/ping', () => 200);
   requests.route('GET', '/quote/:symbol', quoteRetrievalHandler);
   requests.route('POST', '/transactions/buy', buyHandler);
   requests.route('GET', '/*', () => 404);
@@ -43,7 +44,7 @@ async function buyHandler(req, meta) {
         }
       `
     })
-  })
+  });
 
   const { data } = await actorLookupResponse.json();
   if (!data) return 500;
