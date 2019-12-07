@@ -6,6 +6,6 @@ grant usage on schema public to anonymous, actor;
 grant usage, select on public.actor_id_seq to anonymous, actor;
 grant usage, select on public.position_id_seq to anonymous, actor;
 grant usage, select on public.transaction_id_seq to anonymous, actor;
-grant select on table public.actor to anonymous, actor;
+grant select, update on table public.actor to anonymous, actor;
 grant select, insert on table public.transaction to anonymous, actor;
 grant select, insert, update, delete on table public.position to anonymous, actor;
