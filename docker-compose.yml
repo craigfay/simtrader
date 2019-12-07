@@ -39,18 +39,19 @@ services:
             --secret change_me_too
             "
 
-    admin:
-        image: adminer
-        restart: always
-        depends_on: 
-            - database
+    api:
+        build:
+            context: "./services/api"
+        depends_on:
+            - graphql
         ports:
-            - 8080:8080
+            - 80:80
         networks:
             - app-network
         volumes:
-            - ./services/admin/adminer.css:/var/www/html/adminer.css
-
+            - ./services/api:/api
+        command: 'npx ts-node /api/src/main'
+        
 # Docker networks allow containers to communicate with one another
 networks:
   app-network:
