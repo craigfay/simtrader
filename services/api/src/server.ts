@@ -48,15 +48,12 @@ async function buyHandler(req, meta) {
   });
 
   const { data } = await actorLookupResponse.json();
-  console.log({ actorData: data });
   if (!data) return 500;
   if (!data.actorById) return http.response({ status: 400, body: 'Invalid actorId' });
 
   if (data.actorById.cash < quote) {
     return http.response({ status: 400, body: 'Insufficient funds '});
   }
-
-  console.log('Sufficient Funds!', quote, data.actorById);
 
   const positionResponse = await fetch('http://graphql:5000/graphql', {
     method: 'POST',
@@ -89,9 +86,11 @@ async function buyHandler(req, meta) {
     else return http.response({ status: 500, body: err });
 
   } else {
-    const { nodeId, quantity: exitingQuantity } = positionData.allPositions.nodes[0];
-    const [position, err] = await updateExistingPositionQuantity(nodeId, quantity + exitingQuantity);
-    if (position && !err) return position;
+    const [position] = positionData.allPositions.nodes;
+    const { nodeId: positionId, quantity: exitingQuantity } = position;
+    const newQuantity = quantity + exitingQuantity;
+    const [patch, err] = await updatePositionQuantity(positionId, newQuantity);
+    if (patch && !err) return patch;
     else return http.response({ status: 500, body: err });
   }
 }
@@ -132,7 +131,7 @@ async function createNewPosition(actorId:number, symbol:string, quantity:string)
   }
 }
 
-async function updateExistingPositionQuantity(nodeId:string, quantity:string) {
+async function updatePositionQuantity(nodeId:string, quantity:string) {
   const positionResponse = await fetch('http://graphql:5000/graphql', {
     method: 'POST',
     headers: { 'content-type': 'application/json' },
@@ -166,3 +165,39 @@ async function updateExistingPositionQuantity(nodeId:string, quantity:string) {
     return [null, err];
   }
 }
+
+
+async function updateActorCash(nodeId:string, cash:number) {
+  const response = await fetch('http://graphql:5000/graphql', {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({
+      query: `
+        mutation {
+          updateActor(input: {
+            nodeId: ${JSON.stringify(nodeId)}
+            actorPatch: {
+              cash: ${JSON.stringify(cash)}
+            }
+          }) {
+            position {
+              cash
+            }
+          }
+        }
+      `
+    })
+  });
+
+  const { data } = await response.json();
+  if (data && data.updateActor && data.updateActor.position) {
+    const { actor } = data.updateActor;
+    return [actor, null];
+  }
+  else {
+    const err = new Error('Could not update actor');
+    return [null, err];
+  }
+}
+
+
