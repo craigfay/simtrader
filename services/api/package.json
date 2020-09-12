@@ -15,7 +15,7 @@
     "@node-scarlet/http": "^0.10.4",
     "@types/node": "^12.11.7",
     "dom-parser": "^0.1.6",
-    "node-fetch": "^2.6.0"
+    "node-fetch": "^2.6.1"
   },
   "devDependencies": {
     "waverunner": "^0.2.4"
